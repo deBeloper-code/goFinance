@@ -5,6 +5,7 @@ import (
 
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"github.com/deBeloper-code/goFinance/internal/pkg/ports"
+	"github.com/golang-jwt/jwt/v5"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -50,7 +51,21 @@ func (s *service) Login(credentials *entity.DefaultCredentials) (string, error) 
 		return "", err
 	}
 	// 3. Create Session token JWT
+	return createToken(user)
+}
 
+func createToken(user *entity.User) (string, error) {
+	claims := jwt.MapClaims{}
+	claims["userId"] = user.ID
+	claims["userName"] = user.Name
+	claims["user"] = user
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	strToken, err := jwtToken.SignedString([]byte("superdupersecurepass"))
+	if err != nil {
+		return "", err
+	}
+	return strToken, err
 }
 
 func tryMatchPassword(userPassword, credentialsPassword string) error {
