@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/mail"
+	"time"
 
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"github.com/deBeloper-code/goFinance/internal/pkg/ports"
@@ -59,6 +60,7 @@ func createToken(user *entity.User) (string, error) {
 	claims["userId"] = user.ID
 	claims["userName"] = user.Name
 	claims["user"] = user
+	claims["exp"] = time.Hour * 24
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	strToken, err := jwtToken.SignedString([]byte("superdupersecurepass"))
