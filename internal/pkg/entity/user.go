@@ -2,6 +2,9 @@ package entity
 
 import (
 	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // User represents an application user.
@@ -17,4 +20,10 @@ type User struct {
 
 func (User) TableName() string {
 	return "app.users"
+}
+
+// Hooks
+func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
+	user.ID = uuid.NewString()
+	return
 }
