@@ -19,6 +19,8 @@ func RunServer() {
 		Credentials:     false,
 		ValidateHeaders: false,
 	}))
-
+	// Routes
+	RegisterRoutes(server)
+	// Server
 	server.Run(":8080")
 }
