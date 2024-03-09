@@ -42,20 +42,22 @@ func (u *expenseHandler) Add(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-// func (u *expenseHandler) GetUserexpense(c *gin.Context) {
+func (u *expenseHandler) GetExpenses(c *gin.Context) {
+	startDate := c.Query("startDate")
+	endDate := c.Query("endDate")
+	// Get userID from token
+	userID, ok := c.MustGet("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, errors.New("Invalid token"))
+		return
+	}
 
-// 	if err := c.Bind(credentials); err != nil {
-// 		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
-// 		return
-// 	}
-// 	token, err := u.ExpenseService.GetUserexpense(credentials)
+	expenses, err := u.expenseService.GetUserExpense(userID, startDate, endDate)
 
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, nil)
-// 		return
-// 	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"token": token,
-// 	})
-// }
+	c.JSON(http.StatusOK, expenses)
+}

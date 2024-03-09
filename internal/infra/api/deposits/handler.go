@@ -42,20 +42,22 @@ func (u *depositHandler) Add(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-// func (u *depositHandler) GetUserDeposit(c *gin.Context) {
+func (u *depositHandler) GetDeposits(c *gin.Context) {
+	startDate := c.Query("startDate")
+	endDate := c.Query("endDate")
+	// Get userID from token
+	userID, ok := c.MustGet("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, errors.New("Invalid token"))
+		return
+	}
 
-// 	if err := c.Bind(credentials); err != nil {
-// 		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
-// 		return
-// 	}
-// 	token, err := u.depositService.GetUserDeposit(credentials)
+	deposits, err := u.depositService.GetUserDeposit(userID, startDate, endDate)
 
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, nil)
-// 		return
-// 	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
 
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"token": token,
-// 	})
-// }
+	c.JSON(http.StatusOK, deposits)
+}

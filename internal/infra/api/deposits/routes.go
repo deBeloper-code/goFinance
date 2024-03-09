@@ -11,8 +11,9 @@ func RegisterRoutes(e *gin.Engine) {
 	repo := firestore.NewClient()
 	service := deposit.NewService(repo)
 	handler := newHandler(service)
-
+	v1 := e.Group("/api/v1")
 	// Add an deposit
-	e.POST("/api/v1/deposits", middleware.Authenticate(), handler.Add)
+	v1.POST("/deposits", middleware.Authenticate(), handler.Add)
+	v1.GET("/deposits", middleware.Authenticate(), handler.GetDeposits)
 
 }

@@ -10,9 +10,9 @@ func RegisterRoutes(e *gin.Engine) {
 	repo := postgres.NewClient()
 	service := user.NewService(repo)
 	handler := newHandler(service)
-
+	v1 := e.Group("/api/v1")
 	// Create user
-	e.POST("/api/v1/users", handler.CreateUser)
+	v1.POST("/users", handler.CreateUser)
 	// Login user
-	e.POST("/api/v1/authentication", handler.Login)
+	v1.POST("/authentication", handler.Login)
 }
