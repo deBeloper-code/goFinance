@@ -42,7 +42,10 @@ func (u *userHandler) Login(c *gin.Context) {
 	token, err := u.userService.Login(credentials)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, nil)
+		println(err.Error())
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Credentials not valid",
+		})
 		return
 	}
 
