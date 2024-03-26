@@ -22,3 +22,13 @@ func (c *client) Create(value interface{}) error {
 func (c *client) First(dest interface{}, conds ...interface{}) error {
 	return c.db.First(dest, conds...).Error
 }
+
+// Create Bank Account
+func (c *client) Add(value interface{}) error {
+	return c.db.Create(value).Error
+}
+
+// Get Bank Account
+func (c *client) GetUserAccount(value interface{}, conds ...interface{}) error {
+	return c.db.First(value, conds...).Error
+}
