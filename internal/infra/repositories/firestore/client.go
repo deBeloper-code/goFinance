@@ -117,3 +117,75 @@ func (c *client) GetUserDeposit(userID string, startDate, endDate time.Time) ([]
 	}
 	return deposits, nil
 }
+
+// CARDS
+func (c *client) Add(card *entity.Card) error {
+	ctx := context.Background()
+	_, _, err := c.cli.Collection("cards").Add(ctx, card)
+	return err
+}
+
+func (c *client) GetUserCard(cardID string, accountID string) ([]*entity.Card, error) {
+	var cards []*entity.Card
+	ctx := context.Background()
+
+	cardsCollection := c.cli.Collection("cards")
+	query := cardsCollection.Where("accountID", "==", accountID).Where("cardID", "==", cardID)
+
+	iter := query.Documents(ctx)
+	defer iter.Stop()
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		card := &entity.Card{}
+		doc.DataTo(card)
+		cards = append(cards, card)
+	}
+	return cards, nil
+}
+
+// TRANSACTIONS
+func (c *client) AddTransaction(card *entity.Card) error {
+	ctx := context.Background()
+	_, _, err := c.cli.Collection("transactions").Add(ctx, card)
+	return err
+}
+
+func (c *client) GetTransaction(transactionID, accountID string, optionalParams ...string) ([]*entity.Transaction, error) {
+	var transactions []*entity.Transaction
+	ctx := context.Background()
+
+	var typeOfTransaction string
+	if len(optionalParams) > 0 {
+		typeOfTransaction = optionalParams[0]
+	}
+
+	transactionsCollection := c.cli.Collection("transactions")
+	var query firestore.Query
+	if typeOfTransaction == "expense" || typeOfTransaction == "deposit" {
+		query = transactionsCollection.Where("transactionID", "==", transactionID).Where("accountID", "==", accountID).Where("typeOfTransaction", "==", typeOfTransaction)
+	} else {
+		query = transactionsCollection.Where("transactionID", "==", transactionID).Where("accountID", "==", accountID)
+	}
+
+	iter := query.Documents(ctx)
+	defer iter.Stop()
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		transaction := &entity.Transaction{}
+		doc.DataTo(transaction)
+		transactions = append(transactions, transaction)
+	}
+	return transactions, nil
+}
