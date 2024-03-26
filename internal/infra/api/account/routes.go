@@ -9,5 +9,14 @@ import (
 func RegisterRoutes(e *gin.Engine) {
 	// DataBase
 	repo := postgres.NewClient()
-	account.NewService(repo)
+	// Service
+	service := account.NewService(repo)
+	// Handler
+	handler := NewHandler(service)
+	// Routes
+	v1 := e.Group("/api/v1")
+	// Create user
+	v1.POST("/accounts", handler.Add)
+	// Login user
+	v1.GET("/accounts", handler.GetUserAccount)
 }

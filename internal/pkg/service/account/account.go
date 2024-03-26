@@ -21,6 +21,7 @@ func (s *service) Add(account *entity.Account) error {
 	return s.repo.Add(account)
 }
 
-func (s *service) GetUserAccount(userID, accountID string) (*entity.Account, error) {
-	return s.repo.GetUserAccount(userID, accountID)
+func (s *service) GetUserAccount(userID, accountID string) error {
+	account := &entity.Account{}
+	return s.repo.GetUserAccount(account, "email = ?", "credentials.Email")
 }
