@@ -16,11 +16,11 @@ func NewService(repo ports.CardRepository) *service {
 }
 
 func (s *service) Add(card *entity.Card) error {
-	return s.repo.Add(card)
+	return s.repo.AddCard(card)
 }
 
 func (s *service) GetUserCard(cardID string, accountID string) ([]*entity.Card, error) {
-	card, err := s.repo.GetUserCard(cardID, accountID)
+	card, err := s.repo.GetUserCard(cardID, accountID, "email = ?", cardID)
 	if err != nil {
 		return nil, err
 	}

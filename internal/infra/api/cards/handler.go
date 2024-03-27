@@ -13,7 +13,7 @@ type cardHandler struct {
 	cardService ports.CardService
 }
 
-func newHandler(service ports.CardRepository) *cardHandler {
+func newHandler(service ports.CardService) *cardHandler {
 	return &cardHandler{
 		cardService: service,
 	}
@@ -27,12 +27,11 @@ func (u *cardHandler) Add(c *gin.Context) {
 	}
 
 	// Get userID from token
-	userID, ok := c.MustGet("userID").(string)
+	_, ok := c.MustGet("userID").(string)
 	if !ok {
 		c.JSON(http.StatusBadRequest, errors.New("Invalid token"))
 		return
 	}
-	card.AccountID = userID
 
 	if err := u.cardService.Add(card); err != nil {
 		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
