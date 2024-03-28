@@ -15,6 +15,7 @@ func NewService(repo ports.CardRepository) *service {
 	}
 }
 
+// This layer is for adding Business Rules
 func (s *service) Add(card *entity.Card) error {
 	return s.repo.AddCard(card)
 }

@@ -20,25 +20,20 @@ func newHandler(service ports.CardService) *cardHandler {
 }
 
 func (u *cardHandler) Add(c *gin.Context) {
-	card := &entity.Card{}
-	if err := c.Bind(card); err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
+	var card entity.Card
+
+	// Checking json body
+	if err := c.ShouldBindJSON(&card); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	// Get userID from token
-	_, ok := c.MustGet("userID").(string)
-	if !ok {
-		c.JSON(http.StatusBadRequest, errors.New("Invalid token"))
+	// Sending data to (Business Rules)
+	if err := u.cardService.Add(&card); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if err := u.cardService.Add(card); err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
-		return
-	}
-
-	c.JSON(http.StatusOK, nil)
+	// Success response
+	c.JSON(http.StatusOK, gin.H{"Success": "Card cread"})
 }
 
 func (u *cardHandler) GetCard(c *gin.Context) {

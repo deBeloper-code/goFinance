@@ -5,7 +5,7 @@ import (
 )
 
 type CardRepository interface {
-	AddCard(value interface{}) error
+	AddCard(dest interface{}) error
 	GetUserCard(cardID, accountID string, conds ...interface{}) ([]*entity.Card, error)
 }
 
