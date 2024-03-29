@@ -17,7 +17,10 @@ func NewService(repo ports.CardRepository) *service {
 
 // This layer is for adding Business Rules
 func (s *service) Add(card *entity.Card) error {
-	return s.repo.AddCard(card)
+	// User table
+	user := &entity.User{}
+
+	return s.repo.AddCard(card, user, "id = ?", card.UserID)
 }
 
 func (s *service) GetUserCard(cardID string, accountID string) ([]*entity.Card, error) {

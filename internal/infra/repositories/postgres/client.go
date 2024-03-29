@@ -27,17 +27,13 @@ func (c *client) First(dest interface{}, conds ...interface{}) error {
 }
 
 // Create card a new record in our DB.
-func (c *client) AddCard(dest interface{}) error {
-	card := dest.(*entity.Card)
-	// First Looking for if userId exists
-	var user entity.User
-	if err := c.First(&user, "id = ?", card.UserID); err != nil {
+func (c *client) AddCard(dest interface{}, value interface{}, conds ...interface{}) error {
+	// First Looking for user exists
+	if err := c.First(&value, conds...); err != nil {
 		return err
 	}
-	// Assign the UserID to the card.
-	card.UserID = user.ID
 	// If the user exist you can create Card
-	return c.db.Create(card).Error
+	return c.db.Create(dest).Error
 }
 
 // First find first record that match given conditions.
