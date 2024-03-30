@@ -9,4 +9,5 @@ type UserRepository interface {
 type UserService interface {
 	Create(user *entity.User) error
 	Login(credentials *entity.DefaultCredentials) (string, error)
+	Info(userId string) (*entity.User, error)
 }
