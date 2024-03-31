@@ -16,6 +16,7 @@ var onceDBLoad sync.Once
 
 var tables = []interface{}{
 	&entity.User{},
+	&entity.Card{},
 }
 
 func connect() *gorm.DB {

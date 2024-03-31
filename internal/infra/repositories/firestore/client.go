@@ -118,37 +118,6 @@ func (c *client) GetUserDeposit(userID string, startDate, endDate time.Time) ([]
 	return deposits, nil
 }
 
-// CARDS
-func (c *client) Add(card *entity.Card) error {
-	ctx := context.Background()
-	_, _, err := c.cli.Collection("cards").Add(ctx, card)
-	return err
-}
-
-func (c *client) GetUserCard(cardID string, accountID string) ([]*entity.Card, error) {
-	var cards []*entity.Card
-	ctx := context.Background()
-
-	cardsCollection := c.cli.Collection("cards")
-	query := cardsCollection.Where("accountID", "==", accountID).Where("cardID", "==", cardID)
-
-	iter := query.Documents(ctx)
-	defer iter.Stop()
-	for {
-		doc, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		card := &entity.Card{}
-		doc.DataTo(card)
-		cards = append(cards, card)
-	}
-	return cards, nil
-}
-
 // TRANSACTIONS
 func (c *client) AddTransaction(card *entity.Card) error {
 	ctx := context.Background()

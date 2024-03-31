@@ -15,12 +15,16 @@ func NewService(repo ports.CardRepository) *service {
 	}
 }
 
+// This layer is for adding Business Rules
 func (s *service) Add(card *entity.Card) error {
-	return s.repo.Add(card)
+	// User table
+	user := &entity.User{}
+
+	return s.repo.AddCard(card, user, "id = ?", card.UserID)
 }
 
 func (s *service) GetUserCard(cardID string, accountID string) ([]*entity.Card, error) {
-	card, err := s.repo.GetUserCard(cardID, accountID)
+	card, err := s.repo.GetUserCard(cardID, accountID, "email = ?", cardID)
 	if err != nil {
 		return nil, err
 	}

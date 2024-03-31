@@ -77,3 +77,13 @@ func tryMatchPassword(userPassword, credentialsPassword string) error {
 	}
 	return nil
 }
+
+func (s *service) Info(userId string) (*entity.User, error) {
+	user := &entity.User{}
+	// Looking for user
+	if err := s.repo.First(user, "id = ?", userId); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

@@ -53,3 +53,29 @@ func (u *userHandler) Login(c *gin.Context) {
 		"token": token,
 	})
 }
+
+func (u *userHandler) Info(c *gin.Context) {
+	// Get userID from token
+	userID, ok := c.MustGet("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Credentials not valid",
+		})
+		return
+	}
+	user, err := u.userService.Info(userID)
+
+	if err != nil {
+		println(err.Error())
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "User not found",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"id":       user.ID,
+		"name":     user.Name,
+		"lastName": user.LastName,
+		"email":    user.Email,
+	})
+}

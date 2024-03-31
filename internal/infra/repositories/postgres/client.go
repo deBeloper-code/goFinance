@@ -1,6 +1,9 @@
 package postgres
 
-import "gorm.io/gorm"
+import (
+	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
+	"gorm.io/gorm"
+)
 
 type client struct {
 	db *gorm.DB
@@ -21,4 +24,20 @@ func (c *client) Create(value interface{}) error {
 // First find first record that match given conditions.
 func (c *client) First(dest interface{}, conds ...interface{}) error {
 	return c.db.First(dest, conds...).Error
+}
+
+// Create card a new record in our DB.
+func (c *client) AddCard(dest interface{}, value interface{}, conds ...interface{}) error {
+	// First Looking for user exists
+	if err := c.First(&value, conds...); err != nil {
+		return err
+	}
+	// If the user exist you can create Card
+	return c.db.Create(dest).Error
+}
+
+// First find first record that match given conditions.
+func (c *client) GetUserCard(cardID, accountID string, conds ...interface{}) ([]*entity.Card, error) {
+	card := []*entity.Card{}
+	return card, c.db.First(cardID, conds...).Error
 }

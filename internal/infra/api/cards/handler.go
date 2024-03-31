@@ -13,33 +13,27 @@ type cardHandler struct {
 	cardService ports.CardService
 }
 
-func newHandler(service ports.CardRepository) *cardHandler {
+func newHandler(service ports.CardService) *cardHandler {
 	return &cardHandler{
 		cardService: service,
 	}
 }
 
 func (u *cardHandler) Add(c *gin.Context) {
-	card := &entity.Card{}
-	if err := c.Bind(card); err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
+	var card entity.Card
+
+	// Checking json body
+	if err := c.ShouldBindJSON(&card); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	// Get userID from token
-	userID, ok := c.MustGet("userID").(string)
-	if !ok {
-		c.JSON(http.StatusBadRequest, errors.New("Invalid token"))
+	// Sending data to (Business Rules)
+	if err := u.cardService.Add(&card); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	card.AccountID = userID
-
-	if err := u.cardService.Add(card); err != nil {
-		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
-		return
-	}
-
-	c.JSON(http.StatusOK, nil)
+	// Success response
+	c.JSON(http.StatusOK, gin.H{"Success": "Card cread"})
 }
 
 func (u *cardHandler) GetCard(c *gin.Context) {

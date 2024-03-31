@@ -5,8 +5,8 @@ import (
 )
 
 type CardRepository interface {
-	Add(card *entity.Card) error
-	GetUserCard(cardID string, accountID string) ([]*entity.Card, error)
+	AddCard(dest interface{}, value interface{}, conds ...interface{}) error
+	GetUserCard(cardID, accountID string, conds ...interface{}) ([]*entity.Card, error)
 }
 
 type CardService interface {
