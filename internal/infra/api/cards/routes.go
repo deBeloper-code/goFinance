@@ -17,7 +17,7 @@ func RegisterRoutes(e *gin.Engine) {
 	// Group routes
 	v1 := e.Group("/api/v1")
 	// Add an card
-	v1.POST("/cards", handler.Add)
+	v1.POST("/cards", middleware.Authenticate(), handler.Add)
 	// Get a user card
 	v1.GET("/cards", middleware.Authenticate(), handler.GetCard)
 
