@@ -1,6 +1,8 @@
 package card
 
 import (
+	"time"
+
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"github.com/deBeloper-code/goFinance/internal/pkg/ports"
 )
@@ -23,10 +25,29 @@ func (s *service) Add(card *entity.Card) error {
 	return s.repo.AddCard(card, user, "id = ?", card.UserID)
 }
 
-func (s *service) GetUserCard(cardID string, accountID string) ([]*entity.Card, error) {
-	card, err := s.repo.GetUserCard(cardID, accountID, "email = ?", cardID)
+func (s *service) GetUserCard(userId string) ([]*entity.Card, error) {
+	// Cards slice
+	var cards []*entity.Card
+	// Retrieving cards from repository
+	cardInterfaces, err := s.repo.Find(&entity.Card{}, "user_id = ?", userId)
 	if err != nil {
 		return nil, err
 	}
-	return card, nil
+	for _, m := range cardInterfaces {
+		card := entity.Card{
+			CardID:        m["card_id"].(string),
+			UserID:        m["user_id"].(string),
+			AccountNumber: m["account_number"].(string),
+			CardNumber:    m["card_number"].(string),
+			Balance:       m["balance"].(float64),
+			// TODO: We need to review the dates UTC
+			ExpiryDate: m["expiry_date"].(time.Time),
+			CVV:        m["cvv"].(string),
+			Issuer:     m["issuer"].(string),
+			Type:       m["type"].(string),
+		}
+		cards = append(cards, &card)
+	}
+
+	return cards, nil
 }

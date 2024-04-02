@@ -3,6 +3,7 @@ package cards
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"github.com/deBeloper-code/goFinance/internal/pkg/ports"
@@ -36,22 +37,46 @@ func (u *cardHandler) Add(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"Success": "Card cread"})
 }
 
+type CardInfoRes struct {
+	CardID        string    `json:"cardId"`
+	UserID        string    `json:"userId"`
+	AccountNumber string    `json:"accountNumber"`
+	CardNumber    string    `json:"cardNumber"`
+	Balance       float64   `json:"balance"`
+	ExpiryDate    time.Time `json:"expiryDate"`
+	CVV           string    `json:"cvv"`
+	Type          string    `json:"type"`
+}
+
 func (u *cardHandler) GetCard(c *gin.Context) {
-	cardID := c.Query("cardId")
-	accountID := c.Query("accountId")
 	// Get userID from token
-	_, ok := c.MustGet("userID").(string)
+	userId, ok := c.MustGet("userID").(string)
 	if !ok {
 		c.JSON(http.StatusBadRequest, errors.New("Invalid token"))
 		return
 	}
 
-	cards, err := u.cardService.GetUserCard(cardID, accountID)
+	cards, err := u.cardService.GetUserCard(userId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 
-	c.JSON(http.StatusOK, cards)
+	var cardInfo []CardInfoRes
+
+	for _, card := range cards {
+		cardInfo = append(cardInfo, CardInfoRes{
+			CardID:        card.CardID,
+			UserID:        card.UserID,
+			AccountNumber: card.AccountNumber,
+			CardNumber:    card.CardNumber,
+			Balance:       card.Balance,
+			ExpiryDate:    card.ExpiryDate,
+			CVV:           card.CVV,
+			Type:          card.Type,
+		})
+	}
+
+	c.JSON(http.StatusOK, cardInfo)
 }

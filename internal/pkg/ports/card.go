@@ -6,10 +6,10 @@ import (
 
 type CardRepository interface {
 	AddCard(dest interface{}, value interface{}, conds ...interface{}) error
-	GetUserCard(cardID, accountID string, conds ...interface{}) ([]*entity.Card, error)
+	Find(dest interface{}, conds ...interface{}) ([]map[string]interface{}, error)
 }
 
 type CardService interface {
 	Add(card *entity.Card) error
-	GetUserCard(cardID string, accountID string) ([]*entity.Card, error)
+	GetUserCard(userId string) ([]*entity.Card, error)
 }

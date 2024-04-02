@@ -1,7 +1,6 @@
 package postgres
 
 import (
-	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"gorm.io/gorm"
 )
 
@@ -36,8 +35,13 @@ func (c *client) AddCard(dest interface{}, value interface{}, conds ...interface
 	return c.db.Create(dest).Error
 }
 
-// First find first record that match given conditions.
-func (c *client) GetUserCard(cardID, accountID string, conds ...interface{}) ([]*entity.Card, error) {
-	card := []*entity.Card{}
-	return card, c.db.First(cardID, conds...).Error
+// Find gets records (Slice []) that match given conditions.
+func (c *client) Find(dest interface{}, conds ...interface{}) ([]map[string]interface{}, error) {
+	var results []map[string]interface{}
+	// Find results
+	if err := c.db.Model(dest).Find(&results, conds...).Error; err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }
