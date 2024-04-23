@@ -36,7 +36,7 @@ func connect() *gorm.DB {
 				panic("Failed to connect: " + source)
 			}
 			time.Sleep(3 * time.Second)
-			db, err = gorm.Open(postgres.Open(source), &gorm.Config{})
+			db, err = gorm.Open(postgres.Open("postgresql://root:root@localhost:5432/financeDb"), &gorm.Config{})
 			if err != nil {
 				log.Info("Retrying connection...", err)
 				i++

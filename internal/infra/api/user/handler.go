@@ -21,7 +21,8 @@ func newHandler(service ports.UserService) *userHandler {
 
 func (u *userHandler) CreateUser(c *gin.Context) {
 	user := &entity.User{}
-	if err := c.Bind(user); err != nil {
+  
+        if err := c.Bind(user); err != nil {
 		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
 		return
 	}

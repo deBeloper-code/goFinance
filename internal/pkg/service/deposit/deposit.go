@@ -21,7 +21,11 @@ func NewService(repo ports.DepositRepository) *service {
 func (s *service) Add(deposit *entity.Deposit) error {
 	return s.repo.AddDeposit(deposit)
 }
-func (s *service) GetUserDeposit(userID string, startDate, endDate string) ([]*entity.Deposit, error) {
+
+func (s *service) GetUserDeposit(
+	userID string,
+	startDate, endDate string,
+) ([]*entity.Deposit, error) {
 	var st, ed time.Time
 	var err error
 	// 1. Date interval will be correct

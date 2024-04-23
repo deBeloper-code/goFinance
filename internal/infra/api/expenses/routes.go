@@ -12,8 +12,9 @@ func RegisterRoutes(e *gin.Engine) {
 	service := expense.NewService(repo)
 	handler := newHandler(service)
 	v1 := e.Group("/api/v1")
-
 	// Add an expense
 	v1.POST("/expenses", middleware.Authenticate(), handler.Add)
 	v1.GET("/expenses", middleware.Authenticate(), handler.GetExpenses)
+	v1.GET("/expenses/gae", middleware.Authenticate(), handler.GetExpenses)
+
 }

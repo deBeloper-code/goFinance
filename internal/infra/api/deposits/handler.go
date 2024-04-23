@@ -2,6 +2,7 @@ package deposits
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
@@ -20,6 +21,8 @@ func newHandler(service ports.DepositService) *depositHandler {
 }
 
 func (u *depositHandler) Add(c *gin.Context) {
+	var estamite = "This is my stimate"
+	fmt.Println(estamite)
 	deposit := &entity.Deposit{}
 	if err := c.Bind(deposit); err != nil {
 		c.JSON(http.StatusBadRequest, errors.New("Invalid input"))
