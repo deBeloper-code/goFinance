@@ -13,13 +13,10 @@ type User struct {
 	Name      string
 	LastName  string
 	Email     string `gorm:"unique"`
+	Address   string
 	Password  string
 	CreatedAt *time.Time
 	DeletedAt *time.Time
-}
-
-func (User) TableName() string {
-	return "app.users"
 }
 
 // Hooks

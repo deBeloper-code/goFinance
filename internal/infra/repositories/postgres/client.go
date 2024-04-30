@@ -45,3 +45,5 @@ func (c *client) Find(dest interface{}, conds ...interface{}) ([]map[string]inte
 
 	return results, nil
 }
+
+// TODO: We need to investigate about Transaction (Best Practice)

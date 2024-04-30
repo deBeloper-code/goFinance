@@ -3,13 +3,15 @@ package entity
 import "time"
 
 type Transaction struct {
-	TransactionID     string    `firestore:"transactionID" json:"transactionId"`
-	AccountID         string    `firestore:"accountID" json:"accountId"`
-	CardID            string    `firestore:"cardID" json:"cardId"`
-	TypeOfTransaction string    `firestore:"typeOfTransaction" json:"typeOfTransaction"`
-	Category          string    `firestore:"category" json:"category"`
-	Name              string    `firestore:"name" json:"name"`
-	Description       string    `firestore:"description" json:"description"`
-	Amount            float64   `firestore:"amount" json:"amount"`
-	Date              time.Time `firestore:"date" json:"date"`
+	TransactionID     string    `gorm:"primaryKey"`
+	SourceCardID      string    `gorm:"source_card_id"`
+	DestinationCardID string    `gorm:"destination_card_id"`
+	TypeOfTransaction string    `gorm:"type_of_transaction"`
+	Category          string    `gorm:"category"`
+	Name              string    `gorm:"name"`
+	Description       string    `gorm:"description"`
+	Amount            float64   `gorm:"type:numeric(15,2);"`
+	Date              time.Time `gorm:"autoCreateTime"`
+	SourceCard        Card      `gorm:"foreignKey:SourceCardID"`
+	DestinationCard   Card      `gorm:"foreignKey:DestinationCardID"`
 }

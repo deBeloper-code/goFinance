@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"github.com/deBeloper-code/goFinance/internal/pkg/ports"
-	"github.com/gin-gonic/gin"
 )
 
 type cardHandler struct {
@@ -34,7 +35,7 @@ func (u *cardHandler) Add(c *gin.Context) {
 		return
 	}
 	// Success response
-	c.JSON(http.StatusOK, gin.H{"Success": "Card cread"})
+	c.JSON(http.StatusOK, gin.H{"Success": "Card created"})
 }
 
 type CardInfoRes struct {
@@ -57,7 +58,6 @@ func (u *cardHandler) GetCard(c *gin.Context) {
 	}
 
 	cards, err := u.cardService.GetUserCard(userId)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, nil)
 		return

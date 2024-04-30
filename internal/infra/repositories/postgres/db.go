@@ -5,18 +5,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 )
 
-var db *gorm.DB
-var onceDBLoad sync.Once
+var (
+	db         *gorm.DB
+	onceDBLoad sync.Once
+)
 
 var tables = []interface{}{
 	&entity.User{},
 	&entity.Card{},
+	&entity.Transaction{},
 }
 
 func connect() *gorm.DB {
