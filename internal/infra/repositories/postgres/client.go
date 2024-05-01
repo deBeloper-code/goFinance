@@ -48,24 +48,48 @@ func (c *client) Find(dest interface{}, conds ...interface{}) ([]map[string]inte
 	return results, nil
 }
 
-// TODO: We need to investigate about Transaction (Best Practice)
-func (c *client) SendTransaction(transactionInit interface{}, source interface{}, destination interface{}, condsSource []interface{}, condsDestination []interface{}) error {
+// WARNING: Improve paramas with DTO's
+// Transactions
+type DestinationParams struct {
+	destination interface{}
+	column      string
+	value       float64
+}
+type SourceParams struct {
+	source interface{}
+	column string
+	value  float64
+}
+type TransactionParams struct {
+	transactionInit interface{}
+	source          SourceParams
+	destination     DestinationParams
+}
+
+// WARNING: We need to improve Errors
+func (c *client) SendTransaction(params TransactionParams) error {
 
 	transaction := c.db.Transaction(func(tx *gorm.DB) error {
-		// 1.- Find Source ID exists
-		if err := tx.First(&source, condsSource...).Error; err != nil {
+		// 1.- Update balance Card SOURCE
+		if err := tx.Model(&params.source.source).Update(params.source.column, params.source.value).Error; err != nil {
 			// return any error will rollback
-			log.Println("Error finding Source ID")
+			log.Println("Error updating Card source balance")
 			return err
 		}
 
-		// 2.- Find Destination ID exists
-		if err := tx.First(&destination, condsDestination...).Error; err != nil {
+		// 2.- Update balance Card DESTINATION
+		if err := tx.Model(&params.destination.destination).Update(params.destination.column, params.destination.value).Error; err != nil {
 			// return any error will rollback
-			log.Println("Error finding destination ID")
+			log.Println("Error updating Card destination balance")
 			return err
 		}
-		// 3.- Get balance source
+
+		// 3.- Create new transaction
+		if err := tx.Create(params.transactionInit).Error; err != nil {
+			// return any error will rollback
+			log.Println("Error creating transaction")
+			return err
+		}
 
 		// return nil will commit the whole transaction
 		return nil

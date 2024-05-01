@@ -33,7 +33,24 @@ func (s *service) GetUserCard(cardID, accountID string, optionalParams ...string
 	return transaction, nil
 }
 
+// WARNING: Improve paramas with DTO's
 // Transaction
+type DestinationParams struct {
+	destination interface{}
+	column      string
+	value       float64
+}
+type SourceParams struct {
+	source interface{}
+	column string
+	value  float64
+}
+type TransactionParams struct {
+	transactionInit interface{}
+	source          SourceParams
+	destination     DestinationParams
+}
+
 func (s *service) TransactionUser(transaction *entity.Transaction) error {
 	//Cards
 	cardSource := &entity.Card{}
@@ -54,5 +71,33 @@ func (s *service) TransactionUser(transaction *entity.Transaction) error {
 		return errors.New("There is not enough balance.")
 	}
 
+	// 4.- Start transaction process.
+	// 4.1- Subtract BALANCE - AMOUNT
+	updatedBalanceSource := balanceSource - transaction.Amount
+	// 4.2- Sum BALANCE + AMOUNT
+	updatedBalanceDestination := cardDestination.Balance + transaction.Amount
+	// 4.3- Fill values to send
+	paramsSource := SourceParams{
+		source: cardSource,
+		column: "cardId",
+		value:  updatedBalanceSource,
+	}
+	paramsDestination := DestinationParams{
+		destination: cardDestination,
+		column:      "cardId",
+		value:       updatedBalanceDestination,
+	}
+
+	transactionParams := TransactionParams{
+		transactionInit: transaction,
+		source:          paramsSource,
+		destination:     paramsDestination,
+	}
+	// 4.4- Sending Transaction
+	if err := s.repo.SendTransaction(transactionParams); err != nil {
+		return err
+	}
+
+	// 5.- MISSION COMPLETED
 	return nil
 }
