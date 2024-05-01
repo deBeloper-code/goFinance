@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"log"
+
 	"gorm.io/gorm"
 )
 
@@ -47,3 +49,27 @@ func (c *client) Find(dest interface{}, conds ...interface{}) ([]map[string]inte
 }
 
 // TODO: We need to investigate about Transaction (Best Practice)
+func (c *client) SendTransaction(transactionInit interface{}, source interface{}, destination interface{}, condsSource []interface{}, condsDestination []interface{}) error {
+
+	transaction := c.db.Transaction(func(tx *gorm.DB) error {
+		// 1.- Find Source ID exists
+		if err := tx.First(&source, condsSource...).Error; err != nil {
+			// return any error will rollback
+			log.Println("Error finding Source ID")
+			return err
+		}
+
+		// 2.- Find Destination ID exists
+		if err := tx.First(&destination, condsDestination...).Error; err != nil {
+			// return any error will rollback
+			log.Println("Error finding destination ID")
+			return err
+		}
+		// 3.- Get balance source
+
+		// return nil will commit the whole transaction
+		return nil
+	})
+
+	return transaction
+}

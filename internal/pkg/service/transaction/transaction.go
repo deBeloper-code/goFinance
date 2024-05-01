@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"errors"
+
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"github.com/deBeloper-code/goFinance/internal/pkg/ports"
 )
@@ -29,4 +31,28 @@ func (s *service) GetUserCard(cardID, accountID string, optionalParams ...string
 		return nil, err
 	}
 	return transaction, nil
+}
+
+// Transaction
+func (s *service) TransactionUser(transaction *entity.Transaction) error {
+	//Cards
+	cardSource := &entity.Card{}
+	cardDestination := &entity.Card{}
+	// 1.- Find Source ID exists
+	if err := s.repo.First(cardSource, "cardId=?", transaction.SourceCardID); err != nil {
+		return err
+	}
+
+	// 2.- Find Destination ID exists
+	if err := s.repo.First(cardDestination, "cardId=?", transaction.DestinationCardID); err != nil {
+		return err
+	}
+	// 3.- Get balance from source user cardID
+	//     Is the balance greater than or equal to the amount?
+	balanceSource := cardSource.Balance
+	if balanceSource < transaction.Amount {
+		return errors.New("There is not enough balance.")
+	}
+
+	return nil
 }
