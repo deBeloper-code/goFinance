@@ -48,44 +48,25 @@ func (c *client) Find(dest interface{}, conds ...interface{}) ([]map[string]inte
 	return results, nil
 }
 
-// WARNING: Improve paramas with DTO's
-// Transactions
-type DestinationParams struct {
-	destination interface{}
-	column      string
-	value       float64
-}
-type SourceParams struct {
-	source interface{}
-	column string
-	value  float64
-}
-type TransactionParams struct {
-	transactionInit interface{}
-	source          SourceParams
-	destination     DestinationParams
-}
-
-// WARNING: We need to improve Errors
-func (c *client) SendTransaction(params TransactionParams) error {
+func (c *client) SendTransaction(transactionInit interface{}, source interface{}, scolumn string, svalue interface{}, destination interface{}, dcolumn string, dvalue interface{}) error {
 
 	transaction := c.db.Transaction(func(tx *gorm.DB) error {
 		// 1.- Update balance Card SOURCE
-		if err := tx.Model(&params.source.source).Update(params.source.column, params.source.value).Error; err != nil {
+		if err := tx.Model(&source).Update(scolumn, svalue).Error; err != nil {
 			// return any error will rollback
 			log.Println("Error updating Card source balance")
 			return err
 		}
 
 		// 2.- Update balance Card DESTINATION
-		if err := tx.Model(&params.destination.destination).Update(params.destination.column, params.destination.value).Error; err != nil {
+		if err := tx.Model(&destination).Update(dcolumn, dvalue).Error; err != nil {
 			// return any error will rollback
 			log.Println("Error updating Card destination balance")
 			return err
 		}
 
 		// 3.- Create new transaction
-		if err := tx.Create(params.transactionInit).Error; err != nil {
+		if err := tx.Create(transactionInit).Error; err != nil {
 			// return any error will rollback
 			log.Println("Error creating transaction")
 			return err

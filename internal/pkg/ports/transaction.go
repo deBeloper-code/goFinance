@@ -5,13 +5,10 @@ import (
 )
 
 type TransactionRepository interface {
-	Add(card *entity.Transaction) error
-	GetTransaction(transactionID, accountID string, optionalParams ...string) ([]*entity.Transaction, error)
 	First(dest interface{}, conds ...interface{}) error
-	SendTransaction(params interface{}) error
+	SendTransaction(transactionInit interface{}, source interface{}, scolumn string, svalue interface{}, destination interface{}, dcolumn string, dvalue interface{}) error
 }
 
 type TransactionService interface {
-	Add(transaction *entity.Transaction) error
-	GetTransaction(transactionID, accountID string, optionalParams ...string) ([]*entity.Transaction, error)
+	TransactionUser(transaction *entity.Transaction) error
 }

@@ -3,6 +3,7 @@ package transaction
 import (
 	"errors"
 
+	"github.com/deBeloper-code/goFinance/internal/infra/repositories/postgres"
 	"github.com/deBeloper-code/goFinance/internal/pkg/entity"
 	"github.com/deBeloper-code/goFinance/internal/pkg/ports"
 )
@@ -15,40 +16,6 @@ func NewService(repo ports.TransactionRepository) *service {
 	return &service{
 		repo: repo,
 	}
-}
-
-func (s *service) Add(transaction *entity.Transaction) error {
-	return s.repo.Add(transaction)
-}
-
-func (s *service) GetUserCard(cardID, accountID string, optionalParams ...string) ([]*entity.Transaction, error) {
-	var typeOfTransaction string
-	if len(optionalParams) > 0 {
-		typeOfTransaction = optionalParams[0]
-	}
-	transaction, err := s.repo.GetTransaction(cardID, accountID, typeOfTransaction)
-	if err != nil {
-		return nil, err
-	}
-	return transaction, nil
-}
-
-// WARNING: Improve paramas with DTO's
-// Transaction
-type DestinationParams struct {
-	destination interface{}
-	column      string
-	value       float64
-}
-type SourceParams struct {
-	source interface{}
-	column string
-	value  float64
-}
-type TransactionParams struct {
-	transactionInit interface{}
-	source          SourceParams
-	destination     DestinationParams
 }
 
 func (s *service) TransactionUser(transaction *entity.Transaction) error {
@@ -77,19 +44,11 @@ func (s *service) TransactionUser(transaction *entity.Transaction) error {
 	// 4.2- Sum BALANCE + AMOUNT
 	updatedBalanceDestination := cardDestination.Balance + transaction.Amount
 	// 4.3- Fill values to send
-	paramsSource := SourceParams{
-		source: cardSource,
-		column: "cardId",
-		value:  updatedBalanceSource,
-	}
-	paramsDestination := DestinationParams{
-		destination: cardDestination,
-		column:      "cardId",
-		value:       updatedBalanceDestination,
-	}
+	paramsSource := postgres.SourceParams{}
+	paramsDestination := postgres.DestinationParams{}
 
-	transactionParams := TransactionParams{
-		transactionInit: transaction,
+	transactionParams := postgres.TransactionParams{
+		transactionInit: "",
 		source:          paramsSource,
 		destination:     paramsDestination,
 	}
